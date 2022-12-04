@@ -8,3 +8,4 @@
 
 ## 参考
 - [使用BlockingQueue的生产者消费者模式](https://developer.aliyun.com/article/609050)
+- [Java使用阻塞队列BlockingQueue实现生产者消费者](https://blog.csdn.net/itmyhome1990/article/details/79346450)
