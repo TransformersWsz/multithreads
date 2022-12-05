@@ -36,6 +36,6 @@ public class Consumer implements Runnable{
                 throw new RuntimeException(e);
             }
         }
-        System.out.println("End Producing, " + "Consumer-" + this.id + " exit now");
+        System.out.println(String.format("End Consuming, " + "Consumer-%s exit now", this.id));
     }
 }

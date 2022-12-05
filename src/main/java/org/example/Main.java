@@ -1,27 +1,68 @@
 package org.example;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
+
 public class Main {
     public static void main(String[] args) {
-        Integer listSize = Integer.parseInt(args[0]);
-        List<Integer> list = new ArrayList<>();
-        for (int i = 0; i < listSize; i++) {
-            list.add(i);
-        }
-        Integer queueSize = Integer.parseInt(args[1]);
-        BlockingQueue<Integer> blockingQueue = new ArrayBlockingQueue(queueSize);
+        ApplicationContext context = new ClassPathXmlApplicationContext("spring/applicationContext.xml");
+        Config config = (Config) context.getBean("configBean");
+        config.info();
 
-//        ExecutorService service = Executors.newCachedThreadPool();
-        Integer producers =  Integer.parseInt(args[2]);
-        Integer consumers =  Integer.parseInt(args[3]);
-        for (int i = 0; i < producers; i++) {
-            new Thread(new Producer(i, list, blockingQueue)).start();
+        List<Integer> goods = new ArrayList<>();
+        // 填充商品元素
+        for (int i = 0; i < config.getElementNum(); i++) {
+            goods.add(i);
         }
-        for (int i = 0; i < consumers; i++) {
-            new Thread(new Consumer(i, list, blockingQueue)).start();
+
+        BlockingQueue<Integer> blockingQueue = new ArrayBlockingQueue(config.getQueueSize());
+
+        ExecutorService producerService = Executors.newFixedThreadPool(config.getProducerPoolSize());
+        for (int i = 0; i < config.getProducerNum(); i++) {
+            producerService.execute(new Producer(i, goods, blockingQueue));
+        }
+
+        ExecutorService consumerService = Executors.newFixedThreadPool(config.getConsumerPoolSize());
+        for (int i = 0; i < config.getConsumerNum(); i++) {
+            consumerService.execute(new Consumer(i, goods, blockingQueue));
+        }
+
+        // 这里只是让线程池不再接收新的任务，不代表等待任务结束
+        producerService.shutdown();
+        consumerService.shutdown();
+        // 这里可能会先执行
+        System.out.println("gggggg");
+
+        while (true) {
+            try {
+                // 一般shutdown和awaitTermination配套使用
+                if (!producerService.awaitTermination(2, TimeUnit.SECONDS)) {
+                }
+                else {
+                    System.out.println("All produce tasks end!");
+                    break;
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        while (true) {
+            try {
+                if (!consumerService.awaitTermination(2, TimeUnit.SECONDS)) {
+                }
+                else {
+                    System.out.println("All consume tasks end!");
+                    break;
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

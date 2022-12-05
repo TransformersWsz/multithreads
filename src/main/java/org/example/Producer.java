@@ -36,5 +36,6 @@ public class Producer implements Runnable{
                 }
             }
         }
+        System.out.println(String.format("Element is empty, End Producing " + "Producer-%s exit now", this.id));
     }
 }
