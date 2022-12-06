@@ -1,10 +1,14 @@
 # Java多线程学习
 - 使用 `BlockingQueue` 来实现生产者-消费者模式
-- 程序入口参数：
-  - 生产的元素个数
-  - 队列大小
-  - 生产者个数
-  - 消费者个数
+- `applicationContext.xml` 参数配置：
+  - `elementNum`: 待生产的元素个数
+  - `producerNum`: 生产者个数
+  - `producerPoolSize`: 生产者线程池大小
+  - `consumerNum`: 消费者个数
+  - `consumerPoolSize`: 消费者线程池大小
+  - `queueSize`: 队列大小
+
+___
 
 ## 参考
 - [使用BlockingQueue的生产者消费者模式](https://developer.aliyun.com/article/609050)
